@@ -8,6 +8,4 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule, {
-  enableLegacyTemplate: true
-});
+platformBrowserDynamic().bootstrapModule(AppModule);
