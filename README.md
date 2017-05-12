@@ -1,5 +1,8 @@
 # NgxDndTest
 
+![demo](https://content.screencast.com/users/hypercubed/folders/Snagit/media/ad76e113-d485-4d10-838c-72e7712f8a90/2017-05-12_10-47-05.gif)
+
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
 
 ## Development server
