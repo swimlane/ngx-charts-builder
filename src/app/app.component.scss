@@ -56,12 +56,6 @@ $color-text-lighter: #fff;
   $color-text-lighter: #fff;
 }
 
-.field {
-  color: $color-text-lighter;
-  background: $color-bg-darker;
-  padding: 20px;
-}
-
 .no-margin {
   margin: 0 !important;
 }
@@ -116,13 +110,15 @@ ngx-section pre {
 }
 
 .builder {
-  .ngx-dnd-item {
-    font-size: 16px;
-  }
-
   .builder-source .ngx-dnd-container {
     border: none;
     padding: 5px;
+
+    .field {
+      color: $color-text-lighter;
+      background: $color-bg-darker;
+      padding: 20px;
+    }
   }
 
   .builder-target {
@@ -135,7 +131,7 @@ ngx-section pre {
     }
 
     .ngx-dnd-container {
-      justify-content: space-between;
+      justify-content: flex-start;
       flex-flow: row wrap;
       display: flex;
       -webkit-box-orient: horizontal;
@@ -144,31 +140,178 @@ ngx-section pre {
 
       border: 2px dotted transparent;
 
-      .gu-unselectable &, &.gu-over, &.gu-over .ngx-dnd-container {
-        border: 2px dotted orange;
-      }
-
       .ngx-dnd-item {
         margin: 5px 1%;
         border: 1px solid transparent;
+        display: inline-flex;
 
-        flex: 1 1 100%;
         box-sizing: border-box;
         -webkit-box-flex: 1;
-        max-width: 100%;
 
-        &.half {
+        &.s0 {
+          flex: 1 1 23%;
+          max-width: 23%;
+        }
+
+        &.s1 {
           flex: 1 1 48%;
-          box-sizing: border-box;
-          -webkit-box-flex: 1;
           max-width: 48%;
         }
-      }
 
-      .ngx-dnd-item.gu-transit,
-      .ngx-dnd-item:hover  {
-        border: 1px solid #1786e9
+        &.s2 {
+          flex: 1 1 73%;
+          max-width: 73%;
+        }
+
+        &.s3 {
+          flex: 1 1 100%;
+          max-width: 100%;
+        }
       }
     }
   }
+}
+
+.builder {
+  font-size: 16px;
+
+  .builder-source {
+    padding: 10px;
+
+    .builder-tools {
+      .ngx-section-header {
+        text-transform: uppercase;
+      }
+      .ngx-section-content {
+        padding: 0;
+
+        .ngx-dnd-container {
+          border: 1px solid #1B1E28;
+          margin: 0;
+          padding: 0;
+
+          .layout {
+            width: 100%;
+          }
+
+          .field {
+            width: 100%;
+            border: 1px solid #1B1E28;
+            color: $color-text-lighter;
+            background: $color-bg-darker;
+            padding: 20px;
+          }
+        }
+
+        ngx-dnd-item {
+          margin: 0;
+          border: 1px solid #1B1E28;
+        }
+
+        .ngx-dnd-item.gu-transit,
+        .ngx-dnd-item:hover  {
+          border: 1px solid #1786e9;
+          color: $color-text-lighter;
+          background-color: #5B6882;
+          padding: 10px;
+        }
+      }
+    }
+  }
+
+  .builder-target {
+    .ngx-section {
+      margin-bottom: 0;
+
+      .ngx-section-header {
+        background-color: #5B6882;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+      }
+
+      .ngx-section-content {
+        padding: 0;
+        border: 1px solid #5B6882;
+        background-color: #232837;
+      }
+    }
+
+    .ngx-tabs {
+      margin: 0;
+      border: 1px solid #5B6882;
+      background-color: #232837;
+
+      .ngx-tabs-list {
+        background-color: #5B6882;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
+        min-height: 40px;
+      }
+
+      .ngx-tab-content {
+        padding: 0;
+        background-color: #232837;
+      }
+    }
+
+    .tab {
+      display: flow-root;
+      .tab-toolbar {
+        float: right;
+      }
+    }
+
+   .ngx-dnd-container {
+      min-height: 40px;
+      border: none;
+      padding: 0;
+    }
+
+    .root-container > .ngx-dnd-container {
+      padding: 10px;
+      border: 1px dashed grey;
+    }
+
+    ngx-dnd-item {
+      min-height: 40px;
+      padding: 0;
+
+      .layout {
+        width: 100%;
+      }
+
+      .field {
+        width: 100%;
+        color: $color-text-lighter;
+        background-color: #5B6882;
+        padding: 5px;
+        box-sizing: border-box;
+        border: 1px solid black;
+
+        &:hover {
+          border: 1px solid #1786e9;
+          color: $color-text-lighter;
+          background-color: #5B6882;
+        }
+      }
+
+      .field-tools {
+        float: right;
+
+        .btn {
+          margin: 0;
+          padding: 0;
+        }
+      }
+
+      &.gu-transit {
+        border: 1px solid #1786e9;
+        color: $color-text-lighter;
+        background-color: #5B6882;
+        padding: 0;
+      }
+    }
+  }
+}
+
+.pull-right {
+  float: right;
 }
