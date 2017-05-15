@@ -19,7 +19,7 @@
         </ngx-dnd-container>
       </ngx-section>
     </div>
-    <div class="builder-target" fxFlex="80%" ngxSplitArea>
+    <div class="builder-target" fxFlex="80%" ngxSplitArea [minAreaPct]="30">
       <ngx-dnd-container
         class="root-container"
         [model]="targetBuilderTools"
@@ -34,7 +34,10 @@
         <ng-template let-model="model" let-template="template">
           <ng-container [ngSwitch]="model.inputType">
             <ng-container *ngSwitchCase="'section'">
-                <ngx-section class="shadow" class="layout" [sectionTitle]="model.name" padding="0">
+                <ngx-section class="shadow" class="layout" padding="0">
+                  <ngx-section-header ngxDragHandle>
+                    {{model.name}}
+                  </ngx-section-header>
                   <ngx-dnd-container
                     dropZone="builder-target"
                     [model]="model.children"
@@ -75,23 +78,23 @@
               </ngx-tabs>
             </div>
             <div *ngSwitchDefault class="field" [class]="model.inputType">
-              <ngx-icon [fontIcon]="model.icon"></ngx-icon>
-              {{model.name}}
-              <div class="field-tools pull-right">
-                <button class="btn btn-link" (click)="model.size = getPrevSize(model.size)">
-                  <ngx-icon fontIcon="arrow-left"></ngx-icon>
-                </button>
-                <button class="btn btn-link" (click)="model.size = getNextSize(model.size)">
-                  <ngx-icon fontIcon="arrow-right"></ngx-icon>
-                </button>
-              </div>
+              <span ngxDragHandle>
+                <ngx-icon [fontIcon]="model.icon"></ngx-icon>
+                {{model.name}}
+              </span>
+              <span class="field-tools pull-right">
+                <i ngxSplitHandle
+                  (drag)="onDrag(model, $event)"
+                  (dragStart)="onDragStart(model, $event)"
+                  (dragEnd)="onDragEnd(model, $event)"></i>
+              </span>
             </div>
           </ng-container>
         </ng-template>
       </ngx-dnd-container>
     </div>
     <div fxFlex="15px" ngxSplitHandle></div>
-    <div fxFlex="20%" ngxSplitArea>
+    <div fxFlex="20%" ngxSplitArea [maxAreaPct]="70">
       <h3>Model</h3>
       <pre><code>{{targetBuilderTools | json}}</code></pre>
     </div>

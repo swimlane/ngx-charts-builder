@@ -56,14 +56,26 @@ export class AppComponent {
     tabs.push({name, children: [], active: idx === 0});
   }
 
-  getNextSize(size) {
-    const idx = Math.min(SIZES.indexOf(size) + 1, SIZES.length - 1);
+  getNextSize(size, N = 1) {
+    let idx = SIZES.indexOf(size) + N;
+    idx = Math.min(idx, SIZES.length - 1);
+    idx = Math.max(idx, 0);
     return SIZES[idx];
   }
 
-  getPrevSize(size) {
-    const idx = Math.max(SIZES.indexOf(size) - 1, 0);
-    return SIZES[idx];
+  onDrag(item, ev) {
+    const N = Math.floor((ev.x - item.x0) / 100);
+    item.size = this.getNextSize(item.size0, N);
+  }
+
+  onDragEnd(item, ev) {
+    item.size0 = item.size;
+    item.x0 = item.x = 0;
+  }
+
+  onDragStart(item, ev) {
+    item.size0 = item.size;
+    item.x0 = item.x = ev.x;
   }
 }
 

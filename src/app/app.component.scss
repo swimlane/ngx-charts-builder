@@ -273,6 +273,19 @@ ngx-section pre {
     ngx-dnd-item {
       min-height: 40px;
       padding: 0;
+      cursor: default;
+
+      & > ngx-section,
+      & > ngx-tabs {
+        cursor: default
+      }
+
+      & .ngx-tabs-list {
+        cursor: move;
+        cursor: grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+      }
 
       .layout {
         width: 100%;
@@ -295,6 +308,7 @@ ngx-section pre {
 
       .field-tools {
         float: right;
+        padding: 0 5px;
 
         .btn {
           margin: 0;
@@ -314,4 +328,20 @@ ngx-section pre {
 
 .pull-right {
   float: right;
+}
+
+ngx-dnd-item.gu-mirror {
+  font-size: 16px;
+  line-height: 16px;
+  background-color: #5B6882;
+
+  & ngx-section-content,
+  & ngx-section-content *,
+  & ngx-tab-content,
+  & ngx-tab-content *,
+  .tab-toolbar,
+  ngx-dnd-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
 }
