@@ -77,7 +77,7 @@ export class AppComponent implements OnInit {
     schemeType: 'ordinal',
     showLegend: true,
     legendTitle: 'Legend',
-    gradient: true,
+    gradient: false,
     showXAxis: true,
     showYAxis: true,
     showXAxisLabel: true,

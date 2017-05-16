@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 
 import { NgxUIModule } from '@swimlane/ngx-ui';
-import { NgxDnDModule } from '@swimlane/ngx-dnd/src/';
+// import { NgxDnDModule } from '@swimlane/ngx-dnd/src/';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 import { AppComponent } from './app.component';
@@ -16,7 +16,7 @@ import { AppComponent } from './app.component';
     BrowserModule,
     BrowserAnimationsModule,
     NgxUIModule,
-    NgxDnDModule,
+    // NgxDnDModule,
     NgxChartsModule
   ],
   providers: [],

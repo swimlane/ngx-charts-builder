@@ -2,90 +2,87 @@
 
 <div class="main">
   <ngx-section class="shadow dark" sectionTitle="Your Data">
+    <span>
+      Copy and paste your tabular (TSV, CSV) data here.
+    </span>
     <ngx-codemirror
       [(ngModel)]="dataText"
       [config]="editorConfig">
     </ngx-codemirror>
-
-    <span *ngFor="let error of errors" class="text-red">
-      Row {{error.row + 2}}: {{error.message | json}} <br />
-    </span>
-    <div *ngIf="!errors.length" class="text-green">
-      {{rawData.length}} records have been successfully parsed!
-    </div>
+    <p>
+      <span *ngFor="let error of errors" class="text-red">
+        Row {{error.row + 2}}: {{error.message | json}} <br />
+      </span>
+      <span *ngIf="!errors.length" class="text-green">
+        {{rawData.length}} records have been successfully parsed!
+      </span>
+    </p>
   </ngx-section>
 
-  <ngx-section class="shadow dark" sectionTitle="Select your Chart" sectionCollapsed="true">
-    <select [(ngModel)]="chartType">
-      <option *ngFor="let chart of chartTypes">
-        {{chart}}
-      </option>
-    </select>
+  <ngx-section class="shadow dark" sectionTitle="Select your Chart">
+    <ngx-select [filterable]="false" label="Chart Type" [ngModel]="[chartType]" (change)="chartType = $event[0]">
+      <ngx-select-option *ngFor="let chart of chartTypes" [name]="chart.name" [value]="chart.name">
+      </ngx-select-option>
+    </ngx-select>
   </ngx-section>
 
-  <ngx-section class="shadow dark" sectionTitle="Map your Dimensions" sectionCollapsed="true">
-    <div>
-      <label>Group by:</label><br />
-      <select [(ngModel)]="dataOptions.groupBy" (ngModelChange)="updateData()">
-        <option *ngFor="let field of headerValues" [value]="field.name">
-          {{field.name}} ({{field.type}})
-        </option>
-      </select>
-    </div>
-    <div>
-      <label>Name:</label><br />
-      <select [(ngModel)]="dataOptions.name" (ngModelChange)="updateData()">
-        <option *ngFor="let field of headerValues" [value]="field.name">
-          {{field.name}} ({{field.type}})
-        </option>
-      </select>
-    </div>
-    <div>
-      <label>Value:</label><br />
-      <select [(ngModel)]="dataOptions.value" (ngModelChange)="updateData()">
-        <option *ngFor="let field of headerValues" [value]="field.name">
-          {{field.name}} ({{field.type}})
-        </option>
-      </select>
-    </div>
-    <div>
-      <label>Value:</label><br />
-      <select [(ngModel)]="dataOptions.value2" (ngModelChange)="updateData()">
-        <option *ngFor="let field of headerValues" [value]="field.name">
-          {{field.name}} ({{field.type}})
-        </option>
-      </select>
-    </div>
-  </ngx-section>
+  <ngx-section class="shadow dark" sectionTitle="Map your Dimensions">
 
-  <ngx-section class="shadow dark" sectionTitle="Customize your Visualization" sectionCollapsed="true">
-    <div>
-      <label>Theme:</label><br />
-      <select [(ngModel)]="theme">
-        <option *ngFor="let theme of ['light', 'dark']">
-          {{theme}}
-        </option>
-      </select>
-    </div>
-      <div>
-        <label>
-          <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend">
-          Show Legend
-          </ngx-toggle>
-        </label>
-      </div>
-      <div>
-        <label>Legend Title:</label><br />
-        <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle"></ngx-input>
-      </div>
-      <div>
-        <label>X Axis Label:</label><br />
-        <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel"></ngx-input>
-      </div>
-      <div>
-        <label>Y Axis Label:</label><br />
-        <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel"></ngx-input>
-      </div>
+    <ngx-select
+      [filterable]="false"
+      label="Group by"
+      [ngModel]="[dataOptions.groupBy]"
+      (change)="dataOptions.groupBy = $event[0]; processData()">
+      <ngx-select-option *ngFor="let field of headerValues"
+        [name]="field"
+        [value]="field.name">
+        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+          {{option.name.name}} <small>{{option.name.type}}</small>
+        </ng-template>
+      </ngx-select-option>
+    </ngx-select>
+
+    <ngx-select
+      [filterable]="false"
+      label="Name"
+      [ngModel]="[dataOptions.name]"
+      (change)="dataOptions.name = $event[0]; processData()">
+      <ngx-select-option *ngFor="let field of headerValues"
+        [name]="field"
+        [value]="field.name">
+        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+          {{option.name.name}} <small>{{option.name.type}}</small>
+        </ng-template>
+      </ngx-select-option>
+    </ngx-select>
+
+    <ngx-select
+      [filterable]="false"
+      label="Value"
+      [ngModel]="[dataOptions.value]"
+      (change)="dataOptions.value = $event[0]; processData()">
+      <ngx-select-option *ngFor="let field of headerValues"
+        [name]="field"
+        [value]="field.name">
+        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+          {{option.name.name}} <small>{{option.name.type}}</small>
+        </ng-template>
+      </ngx-select-option>
+    </ngx-select>
+
+    <ngx-select
+      [filterable]="false"
+      label="Value"
+      [ngModel]="[dataOptions.value2]"
+      (change)="dataOptions.value2 = $event[0]; processData()">
+      <ngx-select-option *ngFor="let field of headerValues"
+        [name]="field"
+        [value]="field.name">
+        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+          {{option.name.name}} <small>{{option.name.type}}</small>
+        </ng-template>
+      </ngx-select-option>
+    </ngx-select>
   </ngx-section>
 
   <ngx-section class="shadow" [class]="theme" sectionTitle="Your Visualization">
@@ -299,6 +296,36 @@
         [maxRadius]="20">
       </ngx-charts-bubble-chart>
     </div>
-    <ngx-button (click)="svgSaver.asSvg()">Save SVG</ngx-button>
+    Download: 
+    <ngx-button (click)="svgSaver.asSvg()">SVG</ngx-button>
+    <ngx-button (click)="svgSaver.asPng()">PNG</ngx-button>
+  </ngx-section>
+
+  <ngx-section class="shadow dark" sectionTitle="Customize your Visualization" sectionCollapsed="true">
+
+    <ngx-select
+      [filterable]="false"
+      label="Theme"
+      [ngModel]="[theme]"
+      (change)="theme = $event[0]">
+      <ngx-select-option *ngFor="let theme of ['light', 'dark']"
+        [name]="theme"
+        [value]="theme">
+      </ngx-select-option>
+    </ngx-select>
+
+    <div>
+      <label>Theme:</label><br />
+      <select [(ngModel)]="theme">
+        <option *ngFor="let theme of ['light', 'dark']">
+          {{theme}}
+        </option>
+      </select>
+    </div>
+    <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend" label="Show Legend">
+    </ngx-toggle>
+    <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle" label="Legend Title"></ngx-input>
+    <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel" label="X Axis Label"></ngx-input>
+    <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel" label="Y Axis Label"></ngx-input>
   </ngx-section>
 </div>
