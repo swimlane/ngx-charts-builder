@@ -1,30 +1,10 @@
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
-  font-style: normal;
-  font-weight: 300;
-  font-size: 1.4rem;
-  line-height: 2rem;
-  letter-spacing: 0.01rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-
-  min-height: 100vh;
-  color: #666;
-}
-
-* {
-  box-sizing: border-box;
-}
-
+/**
+  * Backgrounds
+  */
 $color-bg-darkest: #13141b;
 $color-bg-darker: #1b1e27;
 $color-bg-dark: #232837;
+$color-bg-med: #2f3646;
 $color-bg-light: #455066;
 $color-bg-lighter: #5b6882;
 
@@ -38,310 +18,205 @@ $color-text-med-light: #d9dce1;
 $color-text-light: #f0f1f6;
 $color-text-lighter: #fff;
 
+html, body {
+  margin: 10px;
+  padding: 0;
+  height: 100%;
+  background: $color-bg-darker;
+  color: $color-text-med;
+}
+
+body {
+  font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  min-height: 100vh;
+  color: $color-text-med;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.main {
+  justify-content: center;
+
+  .CodeMirror {
+    height: 250px;
+  }
+}
+
+.light {
+  background: #fff;
+}
+
 .dark {
-  $color-bg-darkest: #13141b;
-  $color-bg-darker: #1b1e27;
-  $color-bg-dark: #232837;
-  $color-bg-light: #455066;
-  $color-bg-lighter: #5b6882;
+  background: $color-bg-darker;
 
-  /**
-    * Text
-    */
-  $color-text-dark: #72809b;
-  $color-text-med-dark: #919db5;
-  $color-text-med: #a8b2c7;
-  $color-text-med-light: #d9dce1;
-  $color-text-light: #f0f1f6;
-  $color-text-lighter: #fff;
+  .ngx-charts {
+
+    text {
+      fill: $color-text-med;
+    }
+
+    .tooltip-anchor {
+      fill: rgb(255,255,255);
+    }
+
+    .gridline-path {
+      stroke: $color-bg-med;
+    }
+
+    .grid-panel {
+      &.odd {
+        rect {
+          fill: rgba(255,255,255,0.05);
+        }
+      }
+    }
+
+    .force-directed-graph {
+      .edge {
+        stroke: $color-bg-light;
+      }
+    }
+
+    .number-card {
+      p {
+        color: $color-text-light;
+      }
+    }
+
+    .gauge {
+      .background-arc{
+        path {
+          fill: $color-bg-med;
+        }
+      }
+
+      .gauge-tick {
+        path {
+          stroke: $color-text-med;
+        }
+        text {
+          fill: $color-text-med;
+        }
+      }
+    }
+
+    .linear-gauge {
+      .background-bar {
+        path {
+          fill: $color-bg-med;
+        }
+      }
+
+      .units {
+        fill: $color-text-dark;
+      }
+    }
+
+    .timeline {
+      .brush-background {
+        fill: rgba(255,255,255,0.05);
+      }
+
+      .brush {
+        .selection {
+          fill: rgba(255, 255, 255, 0.1);
+          stroke: #aaa;
+        }
+      }
+    }
+
+    .polar-chart .polar-chart-background {
+      fill: rgb(30, 34, 46);
+    }
+
+  }
+
+  .chart-legend {
+    .legend-labels {
+      background: rgba(255,255,255,0.05) !important;
+    }
+
+    .legend-item {
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    .legend-label {
+      &:hover {
+        color: #fff !important;
+      }
+
+      .active {
+        .legend-label-text {
+          color: #fff !important;
+        }
+      }
+    }
+
+    .scale-legend-label {
+      color: $color-text-med;
+    }
+  }
+
+  .advanced-pie-legend {
+    color: $color-text-med;
+
+    .legend-item {
+      &:hover {
+        color: #fff !important;
+      }
+    }
+  }
+
+  .number-card .number-card-label {
+    font-size: 0.8em;
+    color: $color-text-med;
+  }
 }
 
-.no-margin {
-  margin: 0 !important;
-}
+$color-text-dark: #72809b;
 
 /**
- * Navigation
+ * Header
  */
-.nav-col {
-  color: $color-text-lighter;
-  background: $color-bg-lighter;
+.style-header {
+  text-transform: uppercase;
+  color: $color-text-dark;
+  font-size: 1rem;
+  position: relative;
+  padding-bottom: 5px;
+  margin: 20px 0;
+  font-weight: 600;
 
-  a {
-    color: $color-text-lighter;
-  }
-
-  h1 {
-    display: block;
-    // height: 50px;
-    background: $color-bg-lighter;
-    padding: 0 15px;
-    line-height: 50px;
-    margin: 0;
-  }
-
-  nav {
-    margin: 20px 15px;
-
-    li {
-      padding: .1rem 0;
-    }
-
-    ul ul {
-      padding-left:10px;
-      padding-bottom:10px;
-      font-size: .9em;
-    }
-
-    a {
-      color: #fff;
-      text-decoration: none;
-    }
+  &:after {
+    content: "";
+    width: 25px;
+    height: 1px;
+    background: $color-text-dark;
+    position: absolute;
+    bottom: 0;
+    left: 0;
   }
 }
 
-.wrapper {
-  width: 100%;
-  padding: 0 30px;
+.viz-container {
+  position: relative;
+  display: flow-root;
 }
 
-ngx-section pre {
-  width: 90%;
+svg.ngx-charts {
+  float: left;
+  overflow: visible;
 }
 
-.builder {
-  .builder-source .ngx-dnd-container {
-    border: none;
-    padding: 5px;
-
-    .field {
-      color: $color-text-lighter;
-      background: $color-bg-darker;
-      padding: 20px;
-    }
-  }
-
-  .builder-target {
-
-    .ngx-input {
-      margin: 0;
-      .ngx-input-wrap {
-        margin: 0;
-      }
-    }
-
-    .ngx-dnd-container {
-      justify-content: flex-start;
-      flex-flow: row wrap;
-      display: flex;
-      -webkit-box-orient: horizontal;
-      -webkit-box-direction: normal;
-      box-sizing: border-box;
-
-      border: 2px dotted transparent;
-
-      .ngx-dnd-item {
-        margin: 5px 1%;
-        border: 1px solid transparent;
-        display: inline-flex;
-
-        box-sizing: border-box;
-        -webkit-box-flex: 1;
-
-        &.s0 {
-          flex: 1 1 23%;
-          max-width: 23%;
-        }
-
-        &.s1 {
-          flex: 1 1 48%;
-          max-width: 48%;
-        }
-
-        &.s2 {
-          flex: 1 1 73%;
-          max-width: 73%;
-        }
-
-        &.s3 {
-          flex: 1 1 100%;
-          max-width: 100%;
-        }
-      }
-    }
-  }
-}
-
-.builder {
-  font-size: 16px;
-
-  .builder-source {
-    padding: 10px;
-
-    .builder-tools {
-      .ngx-section-header {
-        text-transform: uppercase;
-      }
-      .ngx-section-content {
-        padding: 0;
-
-        .ngx-dnd-container {
-          border: 1px solid #1B1E28;
-          margin: 0;
-          padding: 0;
-
-          .layout {
-            width: 100%;
-          }
-
-          .field {
-            width: 100%;
-            border: 1px solid #1B1E28;
-            color: $color-text-lighter;
-            background: $color-bg-darker;
-            padding: 20px;
-          }
-        }
-
-        ngx-dnd-item {
-          margin: 0;
-          border: 1px solid #1B1E28;
-        }
-
-        .ngx-dnd-item.gu-transit,
-        .ngx-dnd-item:hover  {
-          border: 1px solid #1786e9;
-          color: $color-text-lighter;
-          background-color: #5B6882;
-          padding: 10px;
-        }
-      }
-    }
-  }
-
-  .builder-target {
-    .ngx-section {
-      margin-bottom: 0;
-
-      .ngx-section-header {
-        background-color: #5B6882;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
-      }
-
-      .ngx-section-content {
-        padding: 0;
-        border: 1px solid #5B6882;
-        background-color: #232837;
-      }
-    }
-
-    .ngx-tabs {
-      margin: 0;
-      border: 1px solid #5B6882;
-      background-color: #232837;
-
-      .ngx-tabs-list {
-        background-color: #5B6882;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,0.25);
-        min-height: 40px;
-      }
-
-      .ngx-tab-content {
-        padding: 0;
-        background-color: #232837;
-      }
-    }
-
-    .tab {
-      display: flow-root;
-      .tab-toolbar {
-        float: right;
-      }
-    }
-
-   .ngx-dnd-container {
-      min-height: 40px;
-      border: none;
-      padding: 0;
-    }
-
-    .root-container > .ngx-dnd-container {
-      padding: 10px;
-      border: 1px dashed grey;
-    }
-
-    ngx-dnd-item {
-      min-height: 40px;
-      padding: 0;
-      cursor: default;
-
-      & > ngx-section,
-      & > ngx-tabs {
-        cursor: default
-      }
-
-      & .ngx-tabs-list {
-        cursor: move;
-        cursor: grab;
-        cursor: -moz-grab;
-        cursor: -webkit-grab;
-      }
-
-      .layout {
-        width: 100%;
-      }
-
-      .field {
-        width: 100%;
-        color: $color-text-lighter;
-        background-color: #5B6882;
-        padding: 5px;
-        box-sizing: border-box;
-        border: 1px solid black;
-
-        &:hover {
-          border: 1px solid #1786e9;
-          color: $color-text-lighter;
-          background-color: #5B6882;
-        }
-      }
-
-      .field-tools {
-        float: right;
-        padding: 0 5px;
-
-        .btn {
-          margin: 0;
-          padding: 0;
-        }
-      }
-
-      &.gu-transit {
-        border: 1px solid #1786e9;
-        color: $color-text-lighter;
-        background-color: #5B6882;
-        padding: 0;
-      }
-    }
-  }
-}
-
-.pull-right {
-  float: right;
-}
-
-ngx-dnd-item.gu-mirror {
-  font-size: 16px;
-  line-height: 16px;
-  background-color: #5B6882;
-
-  & ngx-section-content,
-  & ngx-section-content *,
-  & ngx-tab-content,
-  & ngx-tab-content *,
-  .tab-toolbar,
-  ngx-dnd-container {
-    display: none !important;
-    visibility: hidden !important;
-  }
+.ngx-charts-outer {
+  display: flow-root;
+  position: relative;
 }

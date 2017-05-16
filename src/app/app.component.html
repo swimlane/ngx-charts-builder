@@ -1,102 +1,304 @@
-<ngx-section class="shadow builder" sectionTitle="Builder Demo">
-  <div fxLayout="row" style="height:500px" ngxSplit="row">
-    <div  class="builder-source" fxFlex="20%">
-      <ngx-section
-        *ngFor="let section of sourceBuilderSections"
-        class="shadow builder-tools"
-        [sectionTitle]="section.name"
-        [padding]="0">
-        <ngx-dnd-container
-          [model]="section.tools"
-          [dropZones]="['builder-target']"
-          [copy]="true"
-          [droppableItemClass]="droppableItemClass"
-          (drag)="builderDrag($event)">
-          <ng-template let-item="model">
-            <ngx-icon [fontIcon]="item.icon"></ngx-icon>
-            {{item.name}}
-          </ng-template>
-        </ngx-dnd-container>
-      </ngx-section>
+<h1>ngx-chart builder</h1>
+
+<div class="main">
+  <ngx-section class="shadow dark" sectionTitle="Your Data">
+    <ngx-codemirror
+      [(ngModel)]="dataText"
+      [config]="editorConfig">
+    </ngx-codemirror>
+
+    <span *ngFor="let error of errors" class="text-red">
+      Row {{error.row + 2}}: {{error.message | json}} <br />
+    </span>
+    <div *ngIf="!errors.length" class="text-green">
+      {{rawData.length}} records have been successfully parsed!
     </div>
-    <div class="builder-target" fxFlex="80%" ngxSplitArea [minAreaPct]="30">
-      <ngx-dnd-container
-        class="root-container"
-        [model]="targetBuilderTools"
-        dropZone="builder-target"
-        [removeOnSpill]="true"
-        [droppableItemClass]="droppableItemClass"
-        (drag)="log($event)"
-        (drop)="log($event)"
-        (over)="log($event)"
-        (out)="log($event)"
-        (remove)="log($event)">
-        <ng-template let-model="model" let-template="template">
-          <ng-container [ngSwitch]="model.inputType">
-            <ng-container *ngSwitchCase="'section'">
-                <ngx-section class="shadow" class="layout" padding="0">
-                  <ngx-section-header ngxDragHandle>
-                    {{model.name}}
-                  </ngx-section-header>
-                  <ngx-dnd-container
-                    dropZone="builder-target"
-                    [model]="model.children"
-                    [removeOnSpill]="true"
-                    [template]="template"
-                    [droppableItemClass]="droppableItemClass"
-                    (drag)="log($event)"
-                    (drop)="log($event)"
-                    (over)="log($event)"
-                    (out)="log($event)"
-                    (remove)="log($event)">
-                  </ngx-dnd-container>
-                </ngx-section>
-            </ng-container>
-            <div *ngSwitchCase="'tab'" class="layout">
-              <div class="tab-toolbar">
-                <button class="btn btn-link" (click)="addTab(model.tabs)">Add Tab</button>
-              </div>
-              <ngx-tabs>
-                <ngx-tab 
-                  *ngFor="let tab of model.tabs" 
-                  [active]="tab.active" 
-                  [title]="tab.name">
-                  <ngx-dnd-container
-                    dropZone="builder-target"
-                    [model]="tab.children"
-                    [removeOnSpill]="true"
-                    [template]="template"
-                    [droppableItemClass]="droppableItemClass"
-                    (drag)="log($event)"
-                    (drop)="log($event)"
-                    (over)="log($event)"
-                    (out)="log($event)"
-                    (remove)="log($event)"
-                    (cancel)="log($event)">
-                  </ngx-dnd-container>
-                </ngx-tab>
-              </ngx-tabs>
-            </div>
-            <div *ngSwitchDefault class="field" [class]="model.inputType">
-              <span ngxDragHandle>
-                <ngx-icon [fontIcon]="model.icon"></ngx-icon>
-                {{model.name}}
-              </span>
-              <span class="field-tools pull-right">
-                <i ngxSplitHandle
-                  (drag)="onDrag(model, $event)"
-                  (dragStart)="onDragStart(model, $event)"
-                  (dragEnd)="onDragEnd(model, $event)"></i>
-              </span>
-            </div>
-          </ng-container>
-        </ng-template>
-      </ngx-dnd-container>
+  </ngx-section>
+
+  <ngx-section class="shadow dark" sectionTitle="Select your Chart" sectionCollapsed="true">
+    <select [(ngModel)]="chartType">
+      <option *ngFor="let chart of chartTypes">
+        {{chart}}
+      </option>
+    </select>
+  </ngx-section>
+
+  <ngx-section class="shadow dark" sectionTitle="Map your Dimensions" sectionCollapsed="true">
+    <div>
+      <label>Group by:</label><br />
+      <select [(ngModel)]="dataOptions.groupBy" (ngModelChange)="updateData()">
+        <option *ngFor="let field of headerValues" [value]="field.name">
+          {{field.name}} ({{field.type}})
+        </option>
+      </select>
     </div>
-    <div fxFlex="15px" ngxSplitHandle></div>
-    <div fxFlex="20%" ngxSplitArea [maxAreaPct]="70">
-      <h3>Model</h3>
-      <pre><code>{{targetBuilderTools | json}}</code></pre>
+    <div>
+      <label>Name:</label><br />
+      <select [(ngModel)]="dataOptions.name" (ngModelChange)="updateData()">
+        <option *ngFor="let field of headerValues" [value]="field.name">
+          {{field.name}} ({{field.type}})
+        </option>
+      </select>
     </div>
-  </div>
-</ngx-section>
+    <div>
+      <label>Value:</label><br />
+      <select [(ngModel)]="dataOptions.value" (ngModelChange)="updateData()">
+        <option *ngFor="let field of headerValues" [value]="field.name">
+          {{field.name}} ({{field.type}})
+        </option>
+      </select>
+    </div>
+    <div>
+      <label>Value:</label><br />
+      <select [(ngModel)]="dataOptions.value2" (ngModelChange)="updateData()">
+        <option *ngFor="let field of headerValues" [value]="field.name">
+          {{field.name}} ({{field.type}})
+        </option>
+      </select>
+    </div>
+  </ngx-section>
+
+  <ngx-section class="shadow dark" sectionTitle="Customize your Visualization" sectionCollapsed="true">
+    <div>
+      <label>Theme:</label><br />
+      <select [(ngModel)]="theme">
+        <option *ngFor="let theme of ['light', 'dark']">
+          {{theme}}
+        </option>
+      </select>
+    </div>
+      <div>
+        <label>
+          <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend">
+          Show Legend
+          </ngx-toggle>
+        </label>
+      </div>
+      <div>
+        <label>Legend Title:</label><br />
+        <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle"></ngx-input>
+      </div>
+      <div>
+        <label>X Axis Label:</label><br />
+        <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel"></ngx-input>
+      </div>
+      <div>
+        <label>Y Axis Label:</label><br />
+        <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel"></ngx-input>
+      </div>
+  </ngx-section>
+
+  <ngx-section class="shadow" [class]="theme" sectionTitle="Your Visualization">
+    <div *ngIf="data.length" class="viz-container">
+      <ngx-charts-bar-vertical-2d
+        *ngIf="chartType === 'bar-vertical-2d'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        xxxbarPadding="chartOptions.barPadding"
+        xxxgroupPadding="chartOptions.groupPadding"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-vertical-2d>
+      <ngx-charts-bar-horizontal-2d
+        *ngIf="chartType === 'bar-horizontal-2d'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-horizontal-2d>
+      <ngx-charts-bar-vertical-stacked
+        *ngIf="chartType === 'bar-vertical-stacked'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-vertical-stacked>
+      <ngx-charts-bar-horizontal-stacked
+        *ngIf="chartType === 'bar-horizontal-stacked'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-horizontal-stacked>
+      <ngx-charts-bar-vertical-normalized
+        *ngIf="chartType === 'bar-vertical-normalized'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-vertical-normalized>
+      <ngx-charts-bar-horizontal-normalized
+        *ngIf="chartType === 'bar-horizontal-normalized'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [gradient]="chartOptions.gradient"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [showGridLines]="chartOptions.showGridLines"
+        [roundDomains]="chartOptions.roundDomains">
+      </ngx-charts-bar-horizontal-normalized>
+      <ngx-charts-polar-chart
+        *ngIf="chartType === 'polar-chart'"
+        [view]="chartOptions.view"
+        class="chart-container"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [gradient]="chartOptions.gradient"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [autoScale]="chartOptions.autoScale"
+        [showGridLines]="chartOptions.showGridLines"
+        [rangeFillOpacity]="chartOptions.rangeFillOpacity"
+        [roundDomains]="chartOptions.roundDomains"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [curve]="chartOptions.curveClosed"
+        [showSeriesOnHover]="chartOptions.showSeriesOnHover">
+      </ngx-charts-polar-chart>
+      <ngx-charts-line-chart
+        *ngIf="chartType === 'line-chart'"
+        [view]="chartOptions.view"
+        class="chart-container"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [results]="data"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [gradient]="chartOptions.gradient"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [autoScale]="chartOptions.autoScale"
+        [showGridLines]="chartOptions.showGridLines"
+        [curve]="chartOptions.curve"
+        [rangeFillOpacity]="chartOptions.rangeFillOpacity"
+        [roundDomains]="chartOptions.roundDomains"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [showSeriesOnHover]="chartOptions.showSeriesOnHover">
+      </ngx-charts-line-chart>
+      <ngx-charts-heat-map
+        *ngIf="chartType === 'heat-map'"
+        class="chart-container"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.colorScheme"
+        [results]="data"
+        [legend]="chartOptions.showLegend"
+        [gradient]="chartOptions.gradient"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        xxxinnerPadding="chartOptions.innerPadding"
+        [tooltipDisabled]="chartOptions.tooltipDisabled">
+      </ngx-charts-heat-map>
+      <ngx-charts-bubble-chart
+        *ngIf="chartType === 'bubble-chart'"
+        [view]="chartOptions.view"
+        class="chart-container"
+        [results]="data"
+        [showGridLines]="chartOptions.showGridLines"
+        [legend]="chartOptions.showLegend"
+        [legendTitle]="chartOptions.legendTitle"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [autoScale]="chartOptions.autoScale"
+        [scheme]="chartOptions.colorScheme"
+        [schemeType]="chartOptions.schemeType"
+        [roundDomains]="chartOptions.roundDomains"
+        [tooltipDisabled]="chartOptions.tooltipDisabled"
+        [minRadius]="3"
+        [maxRadius]="20">
+      </ngx-charts-bubble-chart>
+    </div>
+    <ngx-button (click)="svgSaver.asSvg()">Save SVG</ngx-button>
+  </ngx-section>
+</div>
