@@ -9,6 +9,29 @@ import SvgSaver from 'svgsaver';
 import { chartTypes } from './chartTypes';
 import { gapminder } from './data';
 
+const defaultOptions = {
+  view: [1000, 600],
+  colorScheme: colorSets.find(s => s.name === 'cool'),
+  schemeType: 'ordinal',
+  showLegend: true,
+  legendTitle: 'Legend',
+  gradient: false,
+  showXAxis: true,
+  showYAxis: true,
+  showXAxisLabel: true,
+  showYAxisLabel: true,
+  yAxisLabel: '',
+  xAxisLabel: '',
+  autoScale: true,
+  showGridLines: true,
+  rangeFillOpacity: 0.5,
+  roundDomains: false,
+  tooltipDisabled: false,
+  showSeriesOnHover: true,
+  curve: shape.curveLinear,
+  curveClosed: shape.curveCardinalClosed
+};
+
 const  curves = {
   'Basis': shape.curveBasis,
   'Basis Closed': shape.curveBasisClosed,
@@ -35,25 +58,38 @@ const  curves = {
   encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
-  title = 'app works!';
+  chartTypes = chartTypes;
 
   data: any[];
   rawData: any[];
-
   headerValues: any[];
-  errors: any[] = [];
-  chartType = 'bubble-chart';
-  chartTypes = chartTypes;
-  theme = 'light';
+  errors: any[];
+  chartType: any;
+  theme: string;
 
-  _dataText = gapminder;
+  dataDims: string[];
+  chartOptions: any;
 
+  _dataText: string;
   get dataText() {
-    return this._dataText;
+    return this._dataText || ' ';
   }
 
   set dataText(value) {
     this.updateData(value);
+  }
+
+  get hasValidData() {
+    return this._dataText.length > 0 && this.errors.length === 0;
+  }
+
+  get hasChartSelected() {
+    return this.hasValidData && this.chartType && this.chartType.name;
+  }
+
+  get hasValidDimensions() {
+    return this.hasChartSelected &&
+      !this.chartType.dimLabels.some((l, i) => l ? !this.dataDims[i] : false);
   }
 
   editorConfig = {
@@ -64,53 +100,40 @@ export class AppComponent implements OnInit {
     }
   };
 
-  dataOptions = {
-    groupBy: 'country',
-    name: 'year',
-    value: 'gdp',
-    value2: 'life expectancy'
-  };
-
-  chartOptions = {
-    view: [1400, 600],
-    colorScheme: colorSets.find(s => s.name === 'cool'),
-    schemeType: 'ordinal',
-    showLegend: true,
-    legendTitle: 'Legend',
-    gradient: false,
-    showXAxis: true,
-    showYAxis: true,
-    showXAxisLabel: true,
-    showYAxisLabel: true,
-    yAxisLabel: 'GDP Per Capita',
-    xAxisLabel: 'Census Date',
-    autoScale: true,
-    showGridLines: true,
-    rangeFillOpacity: 0.5,
-    roundDomains: false,
-    tooltipDisabled: false,
-    showSeriesOnHover: true,
-    curve: shape.curveLinear,
-    curveClosed: shape.curveCardinalClosed
-  };
-
   svgSaver = new SvgSaver();
 
   ngOnInit() {
-    this.updateData();
+    this.clearAll();
+  }
+
+  useExample() {
+    this.clear();
+    this.dataText = gapminder;
   }
 
   clear() {
     this.headerValues = [];
     this.rawData = [];
+    this.dataDims = [null, null, null, null];
     return this.data = [];
   }
 
+  clearAll() {
+    this.clear();
+    this.dataText = '';
+    this.chartType = null;
+    this.theme = 'light';
+    this.chartOptions = {...defaultOptions};
+  }
+
   processData() {
-    const key$ = d => d[this.dataOptions.groupBy];
-    const name$ = d => d[this.dataOptions.name];
-    const value$ = d => d[this.dataOptions.value];
-    const value2$ = d => d[this.dataOptions.value2];
+    if (!this.hasValidDimensions) {
+      return;
+    }
+    const key$ = d => d[this.dataDims[0]];
+    const name$ = d => d[this.dataDims[1]];
+    const value$ = d => d[this.dataDims[2]];
+    const value2$ = d => d[this.dataDims[3]];
 
     return this.data = nest()
       .key(key$)
@@ -160,14 +183,12 @@ export class AppComponent implements OnInit {
     }));
 
     if (JSON.stringify(headerValues) !== JSON.stringify(this.headerValues)) {
-      this.headerValues = headerValues;
-      this.dataOptions.groupBy = this.headerValues[0].name;
-      this.dataOptions.name = this.headerValues[1].name;
-      this.dataOptions.value = this.headerValues[2].name;
-      this.dataOptions.value2 = this.headerValues[3].name;
+      this.headerValues = headerValues.slice();
+      this.dataDims = [null, null, null, null];
+      this.data = [];
+    } else {
+      this.processData();
     }
-
-    this.processData();
   }
 }
 

@@ -209,6 +209,7 @@ $color-text-dark: #72809b;
 .viz-container {
   position: relative;
   display: flow-root;
+  min-height: 600px;
 }
 
 svg.ngx-charts {
@@ -219,4 +220,8 @@ svg.ngx-charts {
 .ngx-charts-outer {
   display: flow-root;
   position: relative;
+}
+
+.pull-right {
+  float: right;
 }

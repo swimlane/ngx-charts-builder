@@ -23,7 +23,7 @@
     "@angular/router": "^4.1.2",
     "@swimlane/ngx-charts": "^5.2.1",
     "@swimlane/ngx-dnd": "^1.0.2",
-    "@swimlane/ngx-ui": "^15.0.2",
+    "@swimlane/ngx-ui": "^15.1.0",
     "babyparse": "^0.4.6",
     "core-js": "^2.4.1",
     "d3": "^4.9.0",

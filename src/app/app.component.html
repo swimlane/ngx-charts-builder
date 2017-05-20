@@ -1,17 +1,23 @@
-<h1>ngx-chart builder</h1>
+<h1>ngx-chart builder
+  <small class="pull-right">
+    <button class="btn btn-primary" (click)="clearAll()">Reset</button>
+    <a href="https://github.com/swimlane/ngx-charts-builder" class="btn btn-default">Github</a>
+  </small>
+</h1>
 
 <div class="main">
   <ngx-section class="shadow dark" sectionTitle="Your Data">
     <span>
       Copy and paste your tabular (TSV, CSV) data here.
+      <button class="btn btn-link" (click)="useExample()">(Use example data)</button>
     </span>
     <ngx-codemirror
       [(ngModel)]="dataText"
       [config]="editorConfig">
     </ngx-codemirror>
-    <p>
+    <p *ngIf="dataText.length > 1">
       <span *ngFor="let error of errors" class="text-red">
-        Row {{error.row + 2}}: {{error.message | json}} <br />
+        <span *ngIf="error.row">Row {{error.row + 2}}: </span>{{error.message}} <br />
       </span>
       <span *ngIf="!errors.length" class="text-green">
         {{rawData.length}} records have been successfully parsed!
@@ -19,76 +25,85 @@
     </p>
   </ngx-section>
 
-  <ngx-section class="shadow dark" sectionTitle="Select your Chart">
+  <ngx-section class="shadow dark" sectionTitle="Select your Chart"
+    [sectionCollapsible]="hasValidData"
+    [sectionCollapsed]="!hasValidData">
     <ngx-select [filterable]="false" label="Chart Type" [ngModel]="[chartType]" (change)="chartType = $event[0]">
-      <ngx-select-option *ngFor="let chart of chartTypes" [name]="chart.name" [value]="chart.name">
+      <ngx-select-option *ngFor="let chart of chartTypes" [name]="chart.title" [value]="chart">
       </ngx-select-option>
     </ngx-select>
   </ngx-section>
 
-  <ngx-section class="shadow dark" sectionTitle="Map your Dimensions">
+  <ngx-section class="shadow dark" sectionTitle="Map your Dimensions"
+    [sectionCollapsible]="hasChartSelected"
+    [sectionCollapsed]="!hasChartSelected">
+    <div *ngIf="hasChartSelected">
+      <ngx-select
+        *ngIf="chartType && hasValidData"
+        [filterable]="false"
+        [label]="chartType.dimLabels[0]"
+        [ngModel]="[dataDims[0]]"
+        (change)="dataDims[0] = $event[0]; processData()">
+        <ngx-select-option *ngFor="let field of headerValues"
+          [name]="field"
+          [value]="field.name">
+          <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+            {{option.name.name}} <small>{{option.name.type}}</small>
+          </ng-template>
+        </ngx-select-option>
+      </ngx-select>
 
-    <ngx-select
-      [filterable]="false"
-      label="Group by"
-      [ngModel]="[dataOptions.groupBy]"
-      (change)="dataOptions.groupBy = $event[0]; processData()">
-      <ngx-select-option *ngFor="let field of headerValues"
-        [name]="field"
-        [value]="field.name">
-        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
-          {{option.name.name}} <small>{{option.name.type}}</small>
-        </ng-template>
-      </ngx-select-option>
-    </ngx-select>
+      <ngx-select
+        [filterable]="false"
+        [label]="chartType.dimLabels[1]"
+        [ngModel]="[dataDims[1]]"
+        (change)="dataDims[1] = $event[0]; processData()">
+        <ngx-select-option *ngFor="let field of headerValues"
+          [name]="field"
+          [value]="field.name">
+          <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+            {{option.name.name}} <small>{{option.name.type}}</small>
+          </ng-template>
+        </ngx-select-option>
+      </ngx-select>
 
-    <ngx-select
-      [filterable]="false"
-      label="Name"
-      [ngModel]="[dataOptions.name]"
-      (change)="dataOptions.name = $event[0]; processData()">
-      <ngx-select-option *ngFor="let field of headerValues"
-        [name]="field"
-        [value]="field.name">
-        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
-          {{option.name.name}} <small>{{option.name.type}}</small>
-        </ng-template>
-      </ngx-select-option>
-    </ngx-select>
+      <ngx-select
+        [filterable]="false"
+        [label]="chartType.dimLabels[2]"
+        [ngModel]="[dataDims[2]]"
+        (change)="dataDims[2] = $event[0]; processData()">
+        <ngx-select-option *ngFor="let field of headerValues"
+          [name]="field"
+          [value]="field.name">
+          <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+            {{option.name.name}} <small>{{option.name.type}}</small>
+          </ng-template>
+        </ngx-select-option>
+      </ngx-select>
 
-    <ngx-select
-      [filterable]="false"
-      label="Value"
-      [ngModel]="[dataOptions.value]"
-      (change)="dataOptions.value = $event[0]; processData()">
-      <ngx-select-option *ngFor="let field of headerValues"
-        [name]="field"
-        [value]="field.name">
-        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
-          {{option.name.name}} <small>{{option.name.type}}</small>
-        </ng-template>
-      </ngx-select-option>
-    </ngx-select>
-
-    <ngx-select
-      [filterable]="false"
-      label="Value"
-      [ngModel]="[dataOptions.value2]"
-      (change)="dataOptions.value2 = $event[0]; processData()">
-      <ngx-select-option *ngFor="let field of headerValues"
-        [name]="field"
-        [value]="field.name">
-        <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
-          {{option.name.name}} <small>{{option.name.type}}</small>
-        </ng-template>
-      </ngx-select-option>
-    </ngx-select>
+      <ngx-select
+        *ngIf="chartType.dimLabels[3]"
+        [filterable]="false"
+        [label]="chartType.dimLabels[3]"
+        [ngModel]="[dataDims[3]]"
+        (change)="dataDims[3] = $event[0]; processData()">
+        <ngx-select-option *ngFor="let field of headerValues"
+          [name]="field"
+          [value]="field.name">
+          <ng-template ngx-select-option-input-template ngx-select-option-template let-option="option">
+            {{option.name.name}} <small>{{option.name.type}}</small>
+          </ng-template>
+        </ngx-select-option>
+      </ngx-select>
+    </div>
   </ngx-section>
 
-  <ngx-section class="shadow" [class]="theme" sectionTitle="Your Visualization">
-    <div *ngIf="data.length" class="viz-container">
+  <ngx-section class="shadow" [class]="theme" sectionTitle="Your Visualization"
+    [sectionCollapsible]="hasValidDimensions"
+    [sectionCollapsed]="!hasValidDimensions">
+    <div *ngIf="hasValidDimensions" class="viz-container">
       <ngx-charts-bar-vertical-2d
-        *ngIf="chartType === 'bar-vertical-2d'"
+        *ngIf="chartType.name === 'bar-vertical-2d'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -110,7 +125,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-vertical-2d>
       <ngx-charts-bar-horizontal-2d
-        *ngIf="chartType === 'bar-horizontal-2d'"
+        *ngIf="chartType.name === 'bar-horizontal-2d'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -130,7 +145,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-horizontal-2d>
       <ngx-charts-bar-vertical-stacked
-        *ngIf="chartType === 'bar-vertical-stacked'"
+        *ngIf="chartType.name === 'bar-vertical-stacked'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -150,7 +165,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-vertical-stacked>
       <ngx-charts-bar-horizontal-stacked
-        *ngIf="chartType === 'bar-horizontal-stacked'"
+        *ngIf="chartType.name === 'bar-horizontal-stacked'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -169,7 +184,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-horizontal-stacked>
       <ngx-charts-bar-vertical-normalized
-        *ngIf="chartType === 'bar-vertical-normalized'"
+        *ngIf="chartType.name === 'bar-vertical-normalized'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -189,7 +204,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-vertical-normalized>
       <ngx-charts-bar-horizontal-normalized
-        *ngIf="chartType === 'bar-horizontal-normalized'"
+        *ngIf="chartType.name === 'bar-horizontal-normalized'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -209,7 +224,7 @@
         [roundDomains]="chartOptions.roundDomains">
       </ngx-charts-bar-horizontal-normalized>
       <ngx-charts-polar-chart
-        *ngIf="chartType === 'polar-chart'"
+        *ngIf="chartType.name === 'polar-chart'"
         [view]="chartOptions.view"
         class="chart-container"
         [scheme]="chartOptions.colorScheme"
@@ -233,7 +248,7 @@
         [showSeriesOnHover]="chartOptions.showSeriesOnHover">
       </ngx-charts-polar-chart>
       <ngx-charts-line-chart
-        *ngIf="chartType === 'line-chart'"
+        *ngIf="chartType.name === 'line-chart'"
         [view]="chartOptions.view"
         class="chart-container"
         [scheme]="chartOptions.colorScheme"
@@ -257,7 +272,7 @@
         [showSeriesOnHover]="chartOptions.showSeriesOnHover">
       </ngx-charts-line-chart>
       <ngx-charts-heat-map
-        *ngIf="chartType === 'heat-map'"
+        *ngIf="chartType.name === 'heat-map'"
         class="chart-container"
         [view]="chartOptions.view"
         [scheme]="chartOptions.colorScheme"
@@ -274,7 +289,7 @@
         [tooltipDisabled]="chartOptions.tooltipDisabled">
       </ngx-charts-heat-map>
       <ngx-charts-bubble-chart
-        *ngIf="chartType === 'bubble-chart'"
+        *ngIf="chartType.name === 'bubble-chart'"
         [view]="chartOptions.view"
         class="chart-container"
         [results]="data"
@@ -301,11 +316,14 @@
     <ngx-button (click)="svgSaver.asPng()">PNG</ngx-button>
   </ngx-section>
 
-  <ngx-section class="shadow dark" sectionTitle="Customize your Visualization" sectionCollapsed="true">
+  <ngx-section class="shadow dark" sectionTitle="Customize your Visualization"
+    [sectionCollapsible]="hasValidDimensions"
+    [sectionCollapsed]="!hasValidDimensions">
 
     <ngx-select
       [filterable]="false"
       label="Theme"
+      [allowClear]="false"
       [ngModel]="[theme]"
       (change)="theme = $event[0]">
       <ngx-select-option *ngFor="let theme of ['light', 'dark']"
@@ -314,14 +332,6 @@
       </ngx-select-option>
     </ngx-select>
 
-    <div>
-      <label>Theme:</label><br />
-      <select [(ngModel)]="theme">
-        <option *ngFor="let theme of ['light', 'dark']">
-          {{theme}}
-        </option>
-      </select>
-    </div>
     <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend" label="Show Legend">
     </ngx-toggle>
     <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle" label="Legend Title"></ngx-input>

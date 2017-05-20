@@ -1,11 +1,24 @@
+function createChartType({title, ...obj}) {
+  return {
+    title,
+    name: titleToName(title),
+    dimLabels: ['Group by', 'Name', 'Value', null],
+    ...obj
+  };
+
+  function titleToName(s: string) {
+    return s.toLowerCase().replace(/\ /g, '-');
+  }
+}
+
 export const chartTypes = [
-   { name: 'bar-vertical-2d' },
-   { name: 'bar-horizontal-2d' },
-   { name: 'bar-vertical-stacked' },
-   { name: 'bar-vertical-normalized' },
-   { name: 'bar-horizontal-normalized' },
-   { name: 'polar-chart' },
-   { name: 'line-chart' },
-   { name: 'heat-map' },
-   { name: 'bubble-chart' }
+  createChartType({ title: 'Bar Vertical 2D' }),
+  createChartType({ title: 'Bar Horizontal 2D' }),
+  createChartType({ title: 'Bar Vertical Stacked' }),
+  createChartType({ title: 'Bar Vertical Normalized' }),
+  createChartType({ title: 'Bar Horizontal Normalized' }),
+  createChartType({ title: 'Polar Chart', dimLabels: ['Group by', 'Angle Values', 'Radius Values', null] }),
+  createChartType({ title: 'Line Chart', dimLabels: ['Group by', 'x-Values', 'y-Values', null] }),
+  createChartType({ title: 'Heat Map', dimLabels: ['x-Category', 'y-Category', 'Color', null] }),
+  createChartType({ title: 'Bubble Chart', dimLabels: ['GroupBy', 'x-Values', 'y-Values', 'Radius'] })
 ];

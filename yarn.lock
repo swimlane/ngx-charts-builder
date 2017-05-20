@@ -143,9 +143,9 @@
   dependencies:
     dragula "^3.7.2"
 
-"@swimlane/ngx-ui@^15.0.2":
-  version "15.0.2"
-  resolved "https://registry.yarnpkg.com/@swimlane/ngx-ui/-/ngx-ui-15.0.2.tgz#177bde034c4485cde33ced1bbd43e2c8866fada1"
+"@swimlane/ngx-ui@^15.1.0":
+  version "15.1.0"
+  resolved "https://registry.yarnpkg.com/@swimlane/ngx-ui/-/ngx-ui-15.1.0.tgz#1df56cc773c7c89b220bd29ac480058a245fccf7"
   dependencies:
     "@angular/flex-layout" "2.0.0-beta.8"
     angular2-moment "^1.3.3"

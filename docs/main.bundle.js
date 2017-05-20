@@ -50,6 +50,14 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dyna
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__chartTypes__ = __webpack_require__(205);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__data__ = __webpack_require__(206);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -64,6 +72,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+var defaultOptions = {
+    view: [1000, 600],
+    colorScheme: __WEBPACK_IMPORTED_MODULE_1__swimlane_ngx_charts_release_utils_color_sets__["a" /* colorSets */].find(function (s) { return s.name === 'cool'; }),
+    schemeType: 'ordinal',
+    showLegend: true,
+    legendTitle: 'Legend',
+    gradient: false,
+    showXAxis: true,
+    showYAxis: true,
+    showXAxisLabel: true,
+    showYAxisLabel: true,
+    yAxisLabel: '',
+    xAxisLabel: '',
+    autoScale: true,
+    showGridLines: true,
+    rangeFillOpacity: 0.5,
+    roundDomains: false,
+    tooltipDisabled: false,
+    showSeriesOnHover: true,
+    curve: __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveLinear"],
+    curveClosed: __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveCardinalClosed"]
+};
 var curves = {
     'Basis': __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveBasis"],
     'Basis Closed': __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveBasisClosed"],
@@ -84,12 +114,7 @@ var curves = {
 };
 var AppComponent = (function () {
     function AppComponent() {
-        this.title = 'app works!';
-        this.errors = [];
-        this.chartType = 'bubble-chart';
         this.chartTypes = __WEBPACK_IMPORTED_MODULE_6__chartTypes__["a" /* chartTypes */];
-        this.theme = 'light';
-        this._dataText = __WEBPACK_IMPORTED_MODULE_7__data__["a" /* gapminder */];
         this.editorConfig = {
             lineNumbers: true,
             theme: 'dracula',
@@ -97,39 +122,11 @@ var AppComponent = (function () {
                 name: 'json'
             }
         };
-        this.dataOptions = {
-            groupBy: 'country',
-            name: 'year',
-            value: 'gdp',
-            value2: 'life expectancy'
-        };
-        this.chartOptions = {
-            view: [1400, 600],
-            colorScheme: __WEBPACK_IMPORTED_MODULE_1__swimlane_ngx_charts_release_utils_color_sets__["a" /* colorSets */].find(function (s) { return s.name === 'cool'; }),
-            schemeType: 'ordinal',
-            showLegend: true,
-            legendTitle: 'Legend',
-            gradient: false,
-            showXAxis: true,
-            showYAxis: true,
-            showXAxisLabel: true,
-            showYAxisLabel: true,
-            yAxisLabel: 'GDP Per Capita',
-            xAxisLabel: 'Census Date',
-            autoScale: true,
-            showGridLines: true,
-            rangeFillOpacity: 0.5,
-            roundDomains: false,
-            tooltipDisabled: false,
-            showSeriesOnHover: true,
-            curve: __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveLinear"],
-            curveClosed: __WEBPACK_IMPORTED_MODULE_2_d3_shape__["curveCardinalClosed"]
-        };
         this.svgSaver = new __WEBPACK_IMPORTED_MODULE_5_svgsaver___default.a();
     }
     Object.defineProperty(AppComponent.prototype, "dataText", {
         get: function () {
-            return this._dataText;
+            return this._dataText || ' ';
         },
         set: function (value) {
             this.updateData(value);
@@ -137,20 +134,58 @@ var AppComponent = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(AppComponent.prototype, "hasValidData", {
+        get: function () {
+            return this._dataText.length > 0 && this.errors.length === 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AppComponent.prototype, "hasChartSelected", {
+        get: function () {
+            return this.hasValidData && this.chartType && this.chartType.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(AppComponent.prototype, "hasValidDimensions", {
+        get: function () {
+            var _this = this;
+            return this.hasChartSelected &&
+                !this.chartType.dimLabels.some(function (l, i) { return l ? !_this.dataDims[i] : false; });
+        },
+        enumerable: true,
+        configurable: true
+    });
     AppComponent.prototype.ngOnInit = function () {
-        this.updateData();
+        this.clearAll();
+    };
+    AppComponent.prototype.useExample = function () {
+        this.clear();
+        this.dataText = __WEBPACK_IMPORTED_MODULE_7__data__["a" /* gapminder */];
     };
     AppComponent.prototype.clear = function () {
         this.headerValues = [];
         this.rawData = [];
+        this.dataDims = [null, null, null, null];
         return this.data = [];
+    };
+    AppComponent.prototype.clearAll = function () {
+        this.clear();
+        this.dataText = '';
+        this.chartType = null;
+        this.theme = 'light';
+        this.chartOptions = __assign({}, defaultOptions);
     };
     AppComponent.prototype.processData = function () {
         var _this = this;
-        var key$ = function (d) { return d[_this.dataOptions.groupBy]; };
-        var name$ = function (d) { return d[_this.dataOptions.name]; };
-        var value$ = function (d) { return d[_this.dataOptions.value]; };
-        var value2$ = function (d) { return d[_this.dataOptions.value2]; };
+        if (!this.hasValidDimensions) {
+            return;
+        }
+        var key$ = function (d) { return d[_this.dataDims[0]]; };
+        var name$ = function (d) { return d[_this.dataDims[1]]; };
+        var value$ = function (d) { return d[_this.dataDims[2]]; };
+        var value2$ = function (d) { return d[_this.dataDims[3]]; };
         return this.data = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_d3_collection__["b" /* nest */])()
             .key(key$)
             .entries(this.rawData)
@@ -191,13 +226,13 @@ var AppComponent = (function () {
             type: typeof parsed.data[0][d]
         }); });
         if (JSON.stringify(headerValues) !== JSON.stringify(this.headerValues)) {
-            this.headerValues = headerValues;
-            this.dataOptions.groupBy = this.headerValues[0].name;
-            this.dataOptions.name = this.headerValues[1].name;
-            this.dataOptions.value = this.headerValues[2].name;
-            this.dataOptions.value2 = this.headerValues[3].name;
+            this.headerValues = headerValues.slice();
+            this.dataDims = [null, null, null, null];
+            this.data = [];
         }
-        this.processData();
+        else {
+            this.processData();
+        }
     };
     return AppComponent;
 }());
@@ -271,16 +306,40 @@ AppModule = __decorate([
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return chartTypes; });
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+    return t;
+};
+function createChartType(_a) {
+    var title = _a.title, obj = __rest(_a, ["title"]);
+    return __assign({ title: title, name: titleToName(title), dimLabels: ['Group by', 'Name', 'Value', null] }, obj);
+    function titleToName(s) {
+        return s.toLowerCase().replace(/\ /g, '-');
+    }
+}
 var chartTypes = [
-    { name: 'bar-vertical-2d' },
-    { name: 'bar-horizontal-2d' },
-    { name: 'bar-vertical-stacked' },
-    { name: 'bar-vertical-normalized' },
-    { name: 'bar-horizontal-normalized' },
-    { name: 'polar-chart' },
-    { name: 'line-chart' },
-    { name: 'heat-map' },
-    { name: 'bubble-chart' }
+    createChartType({ title: 'Bar Vertical 2D' }),
+    createChartType({ title: 'Bar Horizontal 2D' }),
+    createChartType({ title: 'Bar Vertical Stacked' }),
+    createChartType({ title: 'Bar Vertical Normalized' }),
+    createChartType({ title: 'Bar Horizontal Normalized' }),
+    createChartType({ title: 'Polar Chart', dimLabels: ['Group by', 'Angle Values', 'Radius Values', null] }),
+    createChartType({ title: 'Line Chart', dimLabels: ['Group by', 'x-Values', 'y-Values', null] }),
+    createChartType({ title: 'Heat Map', dimLabels: ['x-Category', 'y-Category', 'Color', null] }),
+    createChartType({ title: 'Bubble Chart', dimLabels: ['GroupBy', 'x-Values', 'y-Values', 'Radius'] })
 ];
 //# sourceMappingURL=chartTypes.js.map
 
@@ -321,7 +380,7 @@ exports = module.exports = __webpack_require__(51)();
 
 
 // module
-exports.push([module.i, "/**\n  * Backgrounds\n  */\n/**\n  * Text\n  */\nhtml, body {\n  margin: 10px;\n  padding: 0;\n  height: 100%;\n  background: #1b1e27;\n  color: #a8b2c7; }\n\nbody {\n  font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n  text-rendering: optimizeLegibility;\n  min-height: 100vh;\n  color: #a8b2c7; }\n\n* {\n  box-sizing: border-box; }\n\n.main {\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center; }\n  .main .CodeMirror {\n    height: 250px; }\n\n.light {\n  background: #fff; }\n\n.dark {\n  background: #1b1e27; }\n  .dark .ngx-charts text {\n    fill: #a8b2c7; }\n  .dark .ngx-charts .tooltip-anchor {\n    fill: white; }\n  .dark .ngx-charts .gridline-path {\n    stroke: #2f3646; }\n  .dark .ngx-charts .grid-panel.odd rect {\n    fill: rgba(255, 255, 255, 0.05); }\n  .dark .ngx-charts .force-directed-graph .edge {\n    stroke: #455066; }\n  .dark .ngx-charts .number-card p {\n    color: #f0f1f6; }\n  .dark .ngx-charts .gauge .background-arc path {\n    fill: #2f3646; }\n  .dark .ngx-charts .gauge .gauge-tick path {\n    stroke: #a8b2c7; }\n  .dark .ngx-charts .gauge .gauge-tick text {\n    fill: #a8b2c7; }\n  .dark .ngx-charts .linear-gauge .background-bar path {\n    fill: #2f3646; }\n  .dark .ngx-charts .linear-gauge .units {\n    fill: #72809b; }\n  .dark .ngx-charts .timeline .brush-background {\n    fill: rgba(255, 255, 255, 0.05); }\n  .dark .ngx-charts .timeline .brush .selection {\n    fill: rgba(255, 255, 255, 0.1);\n    stroke: #aaa; }\n  .dark .ngx-charts .polar-chart .polar-chart-background {\n    fill: #1e222e; }\n  .dark .chart-legend .legend-labels {\n    background: rgba(255, 255, 255, 0.05) !important; }\n  .dark .chart-legend .legend-item:hover {\n    color: #fff; }\n  .dark .chart-legend .legend-label:hover {\n    color: #fff !important; }\n  .dark .chart-legend .legend-label .active .legend-label-text {\n    color: #fff !important; }\n  .dark .chart-legend .scale-legend-label {\n    color: #a8b2c7; }\n  .dark .advanced-pie-legend {\n    color: #a8b2c7; }\n    .dark .advanced-pie-legend .legend-item:hover {\n      color: #fff !important; }\n  .dark .number-card .number-card-label {\n    font-size: 0.8em;\n    color: #a8b2c7; }\n\n/**\n * Header\n */\n.style-header {\n  text-transform: uppercase;\n  color: #72809b;\n  font-size: 1rem;\n  position: relative;\n  padding-bottom: 5px;\n  margin: 20px 0;\n  font-weight: 600; }\n  .style-header:after {\n    content: \"\";\n    width: 25px;\n    height: 1px;\n    background: #72809b;\n    position: absolute;\n    bottom: 0;\n    left: 0; }\n\n.viz-container {\n  position: relative;\n  display: flow-root; }\n\nsvg.ngx-charts {\n  float: left;\n  overflow: visible; }\n\n.ngx-charts-outer {\n  display: flow-root;\n  position: relative; }\n", ""]);
+exports.push([module.i, "/**\n  * Backgrounds\n  */\n/**\n  * Text\n  */\nhtml, body {\n  margin: 10px;\n  padding: 0;\n  height: 100%;\n  background: #1b1e27;\n  color: #a8b2c7; }\n\nbody {\n  font-family: 'RobotoDraft', 'Roboto', 'Helvetica Neue, Helvetica, Arial', sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n  text-rendering: optimizeLegibility;\n  min-height: 100vh;\n  color: #a8b2c7; }\n\n* {\n  box-sizing: border-box; }\n\n.main {\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center; }\n  .main .CodeMirror {\n    height: 250px; }\n\n.light {\n  background: #fff; }\n\n.dark {\n  background: #1b1e27; }\n  .dark .ngx-charts text {\n    fill: #a8b2c7; }\n  .dark .ngx-charts .tooltip-anchor {\n    fill: white; }\n  .dark .ngx-charts .gridline-path {\n    stroke: #2f3646; }\n  .dark .ngx-charts .grid-panel.odd rect {\n    fill: rgba(255, 255, 255, 0.05); }\n  .dark .ngx-charts .force-directed-graph .edge {\n    stroke: #455066; }\n  .dark .ngx-charts .number-card p {\n    color: #f0f1f6; }\n  .dark .ngx-charts .gauge .background-arc path {\n    fill: #2f3646; }\n  .dark .ngx-charts .gauge .gauge-tick path {\n    stroke: #a8b2c7; }\n  .dark .ngx-charts .gauge .gauge-tick text {\n    fill: #a8b2c7; }\n  .dark .ngx-charts .linear-gauge .background-bar path {\n    fill: #2f3646; }\n  .dark .ngx-charts .linear-gauge .units {\n    fill: #72809b; }\n  .dark .ngx-charts .timeline .brush-background {\n    fill: rgba(255, 255, 255, 0.05); }\n  .dark .ngx-charts .timeline .brush .selection {\n    fill: rgba(255, 255, 255, 0.1);\n    stroke: #aaa; }\n  .dark .ngx-charts .polar-chart .polar-chart-background {\n    fill: #1e222e; }\n  .dark .chart-legend .legend-labels {\n    background: rgba(255, 255, 255, 0.05) !important; }\n  .dark .chart-legend .legend-item:hover {\n    color: #fff; }\n  .dark .chart-legend .legend-label:hover {\n    color: #fff !important; }\n  .dark .chart-legend .legend-label .active .legend-label-text {\n    color: #fff !important; }\n  .dark .chart-legend .scale-legend-label {\n    color: #a8b2c7; }\n  .dark .advanced-pie-legend {\n    color: #a8b2c7; }\n    .dark .advanced-pie-legend .legend-item:hover {\n      color: #fff !important; }\n  .dark .number-card .number-card-label {\n    font-size: 0.8em;\n    color: #a8b2c7; }\n\n/**\n * Header\n */\n.style-header {\n  text-transform: uppercase;\n  color: #72809b;\n  font-size: 1rem;\n  position: relative;\n  padding-bottom: 5px;\n  margin: 20px 0;\n  font-weight: 600; }\n  .style-header:after {\n    content: \"\";\n    width: 25px;\n    height: 1px;\n    background: #72809b;\n    position: absolute;\n    bottom: 0;\n    left: 0; }\n\n.viz-container {\n  position: relative;\n  display: flow-root;\n  min-height: 600px; }\n\nsvg.ngx-charts {\n  float: left;\n  overflow: visible; }\n\n.ngx-charts-outer {\n  display: flow-root;\n  position: relative; }\n\n.pull-right {\n  float: right; }\n", ""]);
 
 // exports
 
@@ -334,11 +393,11 @@ module.exports = module.exports.toString();
 /***/ 495:
 /***/ (function(module, exports) {
 
-module.exports = "<h1>ngx-chart builder</h1>\n\n<div class=\"main\">\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Your Data\">\n    <span>\n      Copy and paste your tabular (TSV, CSV) data here.\n    </span>\n    <ngx-codemirror\n      [(ngModel)]=\"dataText\"\n      [config]=\"editorConfig\">\n    </ngx-codemirror>\n    <p>\n      <span *ngFor=\"let error of errors\" class=\"text-red\">\n        Row {{error.row + 2}}: {{error.message | json}} <br />\n      </span>\n      <span *ngIf=\"!errors.length\" class=\"text-green\">\n        {{rawData.length}} records have been successfully parsed!\n      </span>\n    </p>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Select your Chart\">\n    <ngx-select [filterable]=\"false\" label=\"Chart Type\" [ngModel]=\"[chartType]\" (change)=\"chartType = $event[0]\">\n      <ngx-select-option *ngFor=\"let chart of chartTypes\" [name]=\"chart.name\" [value]=\"chart.name\">\n      </ngx-select-option>\n    </ngx-select>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Map your Dimensions\">\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Group by\"\n      [ngModel]=\"[dataOptions.groupBy]\"\n      (change)=\"dataOptions.groupBy = $event[0]; processData()\">\n      <ngx-select-option *ngFor=\"let field of headerValues\"\n        [name]=\"field\"\n        [value]=\"field.name\">\n        <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n          {{option.name.name}} <small>{{option.name.type}}</small>\n        </ng-template>\n      </ngx-select-option>\n    </ngx-select>\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Name\"\n      [ngModel]=\"[dataOptions.name]\"\n      (change)=\"dataOptions.name = $event[0]; processData()\">\n      <ngx-select-option *ngFor=\"let field of headerValues\"\n        [name]=\"field\"\n        [value]=\"field.name\">\n        <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n          {{option.name.name}} <small>{{option.name.type}}</small>\n        </ng-template>\n      </ngx-select-option>\n    </ngx-select>\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Value\"\n      [ngModel]=\"[dataOptions.value]\"\n      (change)=\"dataOptions.value = $event[0]; processData()\">\n      <ngx-select-option *ngFor=\"let field of headerValues\"\n        [name]=\"field\"\n        [value]=\"field.name\">\n        <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n          {{option.name.name}} <small>{{option.name.type}}</small>\n        </ng-template>\n      </ngx-select-option>\n    </ngx-select>\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Value\"\n      [ngModel]=\"[dataOptions.value2]\"\n      (change)=\"dataOptions.value2 = $event[0]; processData()\">\n      <ngx-select-option *ngFor=\"let field of headerValues\"\n        [name]=\"field\"\n        [value]=\"field.name\">\n        <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n          {{option.name.name}} <small>{{option.name.type}}</small>\n        </ng-template>\n      </ngx-select-option>\n    </ngx-select>\n  </ngx-section>\n\n  <ngx-section class=\"shadow\" [class]=\"theme\" sectionTitle=\"Your Visualization\">\n    <div *ngIf=\"data.length\" class=\"viz-container\">\n      <ngx-charts-bar-vertical-2d\n        *ngIf=\"chartType === 'bar-vertical-2d'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        xxxbarPadding=\"chartOptions.barPadding\"\n        xxxgroupPadding=\"chartOptions.groupPadding\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-2d>\n      <ngx-charts-bar-horizontal-2d\n        *ngIf=\"chartType === 'bar-horizontal-2d'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-2d>\n      <ngx-charts-bar-vertical-stacked\n        *ngIf=\"chartType === 'bar-vertical-stacked'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-stacked>\n      <ngx-charts-bar-horizontal-stacked\n        *ngIf=\"chartType === 'bar-horizontal-stacked'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-stacked>\n      <ngx-charts-bar-vertical-normalized\n        *ngIf=\"chartType === 'bar-vertical-normalized'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-normalized>\n      <ngx-charts-bar-horizontal-normalized\n        *ngIf=\"chartType === 'bar-horizontal-normalized'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-normalized>\n      <ngx-charts-polar-chart\n        *ngIf=\"chartType === 'polar-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [rangeFillOpacity]=\"chartOptions.rangeFillOpacity\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [curve]=\"chartOptions.curveClosed\"\n        [showSeriesOnHover]=\"chartOptions.showSeriesOnHover\">\n      </ngx-charts-polar-chart>\n      <ngx-charts-line-chart\n        *ngIf=\"chartType === 'line-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [curve]=\"chartOptions.curve\"\n        [rangeFillOpacity]=\"chartOptions.rangeFillOpacity\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [showSeriesOnHover]=\"chartOptions.showSeriesOnHover\">\n      </ngx-charts-line-chart>\n      <ngx-charts-heat-map\n        *ngIf=\"chartType === 'heat-map'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        xxxinnerPadding=\"chartOptions.innerPadding\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\">\n      </ngx-charts-heat-map>\n      <ngx-charts-bubble-chart\n        *ngIf=\"chartType === 'bubble-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [results]=\"data\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [minRadius]=\"3\"\n        [maxRadius]=\"20\">\n      </ngx-charts-bubble-chart>\n    </div>\n    Download: \n    <ngx-button (click)=\"svgSaver.asSvg()\">SVG</ngx-button>\n    <ngx-button (click)=\"svgSaver.asPng()\">PNG</ngx-button>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Customize your Visualization\" sectionCollapsed=\"true\">\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Theme\"\n      [ngModel]=\"[theme]\"\n      (change)=\"theme = $event[0]\">\n      <ngx-select-option *ngFor=\"let theme of ['light', 'dark']\"\n        [name]=\"theme\"\n        [value]=\"theme\">\n      </ngx-select-option>\n    </ngx-select>\n\n    <div>\n      <label>Theme:</label><br />\n      <select [(ngModel)]=\"theme\">\n        <option *ngFor=\"let theme of ['light', 'dark']\">\n          {{theme}}\n        </option>\n      </select>\n    </div>\n    <ngx-toggle type=\"checkbox\" [(ngModel)]=\"chartOptions.showLegend\" label=\"Show Legend\">\n    </ngx-toggle>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.legendTitle\" label=\"Legend Title\"></ngx-input>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.xAxisLabel\" label=\"X Axis Label\"></ngx-input>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.yAxisLabel\" label=\"Y Axis Label\"></ngx-input>\n  </ngx-section>\n</div>\n"
+module.exports = "<h1>ngx-chart builder\n  <small><button class=\"small btn btn-primary pull-right\" (click)=\"clearAll()\">Reset</button></small>\n</h1>\n\n<div class=\"main\">\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Your Data\">\n    <span>\n      Copy and paste your tabular (TSV, CSV) data here.\n      <button class=\"btn btn-link\" (click)=\"useExample()\">(Use example data)</button>\n    </span>\n    <ngx-codemirror\n      [(ngModel)]=\"dataText\"\n      [config]=\"editorConfig\">\n    </ngx-codemirror>\n    <p *ngIf=\"dataText.length > 1\">\n      <span *ngFor=\"let error of errors\" class=\"text-red\">\n        <span *ngIf=\"error.row\">Row {{error.row + 2}}: </span>{{error.message}} <br />\n      </span>\n      <span *ngIf=\"!errors.length\" class=\"text-green\">\n        {{rawData.length}} records have been successfully parsed!\n      </span>\n    </p>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Select your Chart\"\n    [sectionCollapsible]=\"hasValidData\"\n    [sectionCollapsed]=\"!hasValidData\">\n    <ngx-select [filterable]=\"false\" label=\"Chart Type\" [ngModel]=\"[chartType]\" (change)=\"chartType = $event[0]\">\n      <ngx-select-option *ngFor=\"let chart of chartTypes\" [name]=\"chart.title\" [value]=\"chart\">\n      </ngx-select-option>\n    </ngx-select>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Map your Dimensions\"\n    [sectionCollapsible]=\"hasChartSelected\"\n    [sectionCollapsed]=\"!hasChartSelected\">\n    <div *ngIf=\"hasChartSelected\">\n      <ngx-select\n        *ngIf=\"chartType && hasValidData\"\n        [filterable]=\"false\"\n        [label]=\"chartType.dimLabels[0]\"\n        [ngModel]=\"[dataDims[0]]\"\n        (change)=\"dataDims[0] = $event[0]; processData()\">\n        <ngx-select-option *ngFor=\"let field of headerValues\"\n          [name]=\"field\"\n          [value]=\"field.name\">\n          <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n            {{option.name.name}} <small>{{option.name.type}}</small>\n          </ng-template>\n        </ngx-select-option>\n      </ngx-select>\n\n      <ngx-select\n        [filterable]=\"false\"\n        [label]=\"chartType.dimLabels[1]\"\n        [ngModel]=\"[dataDims[1]]\"\n        (change)=\"dataDims[1] = $event[0]; processData()\">\n        <ngx-select-option *ngFor=\"let field of headerValues\"\n          [name]=\"field\"\n          [value]=\"field.name\">\n          <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n            {{option.name.name}} <small>{{option.name.type}}</small>\n          </ng-template>\n        </ngx-select-option>\n      </ngx-select>\n\n      <ngx-select\n        [filterable]=\"false\"\n        [label]=\"chartType.dimLabels[2]\"\n        [ngModel]=\"[dataDims[2]]\"\n        (change)=\"dataDims[2] = $event[0]; processData()\">\n        <ngx-select-option *ngFor=\"let field of headerValues\"\n          [name]=\"field\"\n          [value]=\"field.name\">\n          <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n            {{option.name.name}} <small>{{option.name.type}}</small>\n          </ng-template>\n        </ngx-select-option>\n      </ngx-select>\n\n      <ngx-select\n        *ngIf=\"chartType.dimLabels[3]\"\n        [filterable]=\"false\"\n        [label]=\"chartType.dimLabels[3]\"\n        [ngModel]=\"[dataDims[3]]\"\n        (change)=\"dataDims[3] = $event[0]; processData()\">\n        <ngx-select-option *ngFor=\"let field of headerValues\"\n          [name]=\"field\"\n          [value]=\"field.name\">\n          <ng-template ngx-select-option-input-template ngx-select-option-template let-option=\"option\">\n            {{option.name.name}} <small>{{option.name.type}}</small>\n          </ng-template>\n        </ngx-select-option>\n      </ngx-select>\n    </div>\n  </ngx-section>\n\n  <ngx-section class=\"shadow\" [class]=\"theme\" sectionTitle=\"Your Visualization\"\n    [sectionCollapsible]=\"hasValidDimensions\"\n    [sectionCollapsed]=\"!hasValidDimensions\">\n    <div *ngIf=\"hasValidDimensions\" class=\"viz-container\">\n      <ngx-charts-bar-vertical-2d\n        *ngIf=\"chartType.name === 'bar-vertical-2d'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        xxxbarPadding=\"chartOptions.barPadding\"\n        xxxgroupPadding=\"chartOptions.groupPadding\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-2d>\n      <ngx-charts-bar-horizontal-2d\n        *ngIf=\"chartType.name === 'bar-horizontal-2d'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-2d>\n      <ngx-charts-bar-vertical-stacked\n        *ngIf=\"chartType.name === 'bar-vertical-stacked'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-stacked>\n      <ngx-charts-bar-horizontal-stacked\n        *ngIf=\"chartType.name === 'bar-horizontal-stacked'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-stacked>\n      <ngx-charts-bar-vertical-normalized\n        *ngIf=\"chartType.name === 'bar-vertical-normalized'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-vertical-normalized>\n      <ngx-charts-bar-horizontal-normalized\n        *ngIf=\"chartType.name === 'bar-horizontal-normalized'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [gradient]=\"chartOptions.gradient\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [roundDomains]=\"chartOptions.roundDomains\">\n      </ngx-charts-bar-horizontal-normalized>\n      <ngx-charts-polar-chart\n        *ngIf=\"chartType.name === 'polar-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [rangeFillOpacity]=\"chartOptions.rangeFillOpacity\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [curve]=\"chartOptions.curveClosed\"\n        [showSeriesOnHover]=\"chartOptions.showSeriesOnHover\">\n      </ngx-charts-polar-chart>\n      <ngx-charts-line-chart\n        *ngIf=\"chartType.name === 'line-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [curve]=\"chartOptions.curve\"\n        [rangeFillOpacity]=\"chartOptions.rangeFillOpacity\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [showSeriesOnHover]=\"chartOptions.showSeriesOnHover\">\n      </ngx-charts-line-chart>\n      <ngx-charts-heat-map\n        *ngIf=\"chartType.name === 'heat-map'\"\n        class=\"chart-container\"\n        [view]=\"chartOptions.view\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [results]=\"data\"\n        [legend]=\"chartOptions.showLegend\"\n        [gradient]=\"chartOptions.gradient\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        xxxinnerPadding=\"chartOptions.innerPadding\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\">\n      </ngx-charts-heat-map>\n      <ngx-charts-bubble-chart\n        *ngIf=\"chartType.name === 'bubble-chart'\"\n        [view]=\"chartOptions.view\"\n        class=\"chart-container\"\n        [results]=\"data\"\n        [showGridLines]=\"chartOptions.showGridLines\"\n        [legend]=\"chartOptions.showLegend\"\n        [legendTitle]=\"chartOptions.legendTitle\"\n        [xAxis]=\"chartOptions.showXAxis\"\n        [yAxis]=\"chartOptions.showYAxis\"\n        [showXAxisLabel]=\"chartOptions.showXAxisLabel\"\n        [showYAxisLabel]=\"chartOptions.showYAxisLabel\"\n        [xAxisLabel]=\"chartOptions.xAxisLabel\"\n        [yAxisLabel]=\"chartOptions.yAxisLabel\"\n        [autoScale]=\"chartOptions.autoScale\"\n        [scheme]=\"chartOptions.colorScheme\"\n        [schemeType]=\"chartOptions.schemeType\"\n        [roundDomains]=\"chartOptions.roundDomains\"\n        [tooltipDisabled]=\"chartOptions.tooltipDisabled\"\n        [minRadius]=\"3\"\n        [maxRadius]=\"20\">\n      </ngx-charts-bubble-chart>\n    </div>\n    Download: \n    <ngx-button (click)=\"svgSaver.asSvg()\">SVG</ngx-button>\n    <ngx-button (click)=\"svgSaver.asPng()\">PNG</ngx-button>\n  </ngx-section>\n\n  <ngx-section class=\"shadow dark\" sectionTitle=\"Customize your Visualization\"\n    [sectionCollapsible]=\"hasValidDimensions\"\n    [sectionCollapsed]=\"!hasValidDimensions\">\n\n    <ngx-select\n      [filterable]=\"false\"\n      label=\"Theme\"\n      [allowClear]=\"false\"\n      [ngModel]=\"[theme]\"\n      (change)=\"theme = $event[0]\">\n      <ngx-select-option *ngFor=\"let theme of ['light', 'dark']\"\n        [name]=\"theme\"\n        [value]=\"theme\">\n      </ngx-select-option>\n    </ngx-select>\n\n    <ngx-toggle type=\"checkbox\" [(ngModel)]=\"chartOptions.showLegend\" label=\"Show Legend\">\n    </ngx-toggle>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.legendTitle\" label=\"Legend Title\"></ngx-input>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.xAxisLabel\" label=\"X Axis Label\"></ngx-input>\n    <ngx-input type=\"text\" [(ngModel)]=\"chartOptions.yAxisLabel\" label=\"Y Axis Label\"></ngx-input>\n  </ngx-section>\n</div>\n"
 
 /***/ }),
 
-/***/ 544:
+/***/ 540:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(195);
@@ -346,5 +405,5 @@ module.exports = __webpack_require__(195);
 
 /***/ })
 
-},[544]);
+},[540]);
 //# sourceMappingURL=main.bundle.js.map
