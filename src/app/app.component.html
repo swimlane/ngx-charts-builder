@@ -338,4 +338,47 @@
     <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel" label="X Axis Label"></ngx-input>
     <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel" label="Y Axis Label"></ngx-input>
   </ngx-section>
+
+  <ngx-section class="shadow dark" sectionTitle="Customize Color Scale"
+    [sectionCollapsible]="hasValidDimensions"
+    [sectionCollapsed]="!hasValidDimensions">
+
+    <div fxLayout="row wrap" fxLayoutGap="20px">
+      <div fxFlex>
+        <ngx-input
+          class="colors"
+          type="text"
+          [(ngModel)]="colors"
+          (change)="updateColorScheme()"
+          label="Color Scale"
+          hint="Enter named colors or hex codes"></ngx-input>
+        <ngx-input 
+          class="colors"
+          type="number"
+          min="2"
+          max="12"
+          label="Step count"
+          [(ngModel)]="steps"
+          (change)="updateColorScheme()"></ngx-input>
+          <ngx-checkbox
+            [(ngModel)]="bezier"
+            (change)="updateColorScheme()">
+            Bezier interpol
+          </ngx-checkbox>
+          <ngx-checkbox
+            [(ngModel)]="lightness"
+            (change)="updateColorScheme()">
+            Lightness correction
+          </ngx-checkbox>
+      </div>
+      <div fxFlex="0 0 200px">
+          <ul class="color-scale pull-right">
+            <li *ngFor="let hex of chartOptions.colorScheme.domain" [ngStyle]="{'background-color': hex}">{{hex}}</li>
+          </ul>
+      </div>
+    </div>
+
+
+
+  </ngx-section>
 </div>

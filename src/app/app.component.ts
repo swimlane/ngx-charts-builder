@@ -5,6 +5,7 @@ import * as dsv from 'd3-dsv';
 import { nest } from 'd3-collection';
 import * as babyparse from 'babyparse';
 import SvgSaver from 'svgsaver';
+import chroma from 'chroma-js';
 
 import { chartTypes } from './chartTypes';
 import { gapminder } from './data';
@@ -51,6 +52,10 @@ const  curves = {
   'default': shape.curveLinear
 };
 
+function clean(s) {
+  return s.trim().replace(/(, *| +)/g, ',').replace(/['"]/g, '').split(',');
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -69,6 +74,11 @@ export class AppComponent implements OnInit {
 
   dataDims: string[];
   chartOptions: any;
+  colors: string;
+  cleanColors: any;
+  steps: number;
+  bezier: boolean;
+  lightness: boolean;
 
   _dataText: string;
   get dataText() {
@@ -109,6 +119,9 @@ export class AppComponent implements OnInit {
   useExample() {
     this.clear();
     this.dataText = gapminder;
+    this.updateData();
+    this.chartType = chartTypes[0];
+    this.dataDims = [5, 0, 3, 3].map(i => this.headerValues[i].name);
   }
 
   clear() {
@@ -123,7 +136,12 @@ export class AppComponent implements OnInit {
     this.dataText = '';
     this.chartType = null;
     this.theme = 'light';
+    this.colors = '#a8385d,#7aa3e5,#a27ea8,#aae3f5,#adcded,#a95963,#8796c0,#7ed3ed,#50abcc,#ad6886';
+    this.steps = 10;
+    this.bezier = false;
+    this.lightness = false;
     this.chartOptions = {...defaultOptions};
+    return this.updateColorScheme();
   }
 
   processData() {
@@ -189,6 +207,13 @@ export class AppComponent implements OnInit {
     } else {
       this.processData();
     }
+  }
+
+  updateColorScheme(colors = this.colors, steps = this.steps) {
+    this.cleanColors = clean(colors);
+    const scale = this.bezier ? chroma.bezier(this.cleanColors.slice(0, 5)).scale() : chroma.scale(this.cleanColors);
+    const cs = scale.mode('lab').correctLightness(this.lightness);
+    this.chartOptions.colorScheme = {...this.chartOptions.colorScheme, domain: cs.colors(steps)};
   }
 }
 

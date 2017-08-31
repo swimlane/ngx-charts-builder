@@ -225,3 +225,16 @@ svg.ngx-charts {
 .pull-right {
   float: right;
 }
+
+.color-scale {
+  text-align: center;
+  width: 100%;
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+
+  li {
+    margin: 3px;
+    border-radius: 3px;
+  }
+}
