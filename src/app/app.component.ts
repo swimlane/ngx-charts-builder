@@ -52,9 +52,6 @@ const  curves = {
   'default': shape.curveLinear
 };
 
-function clean(s) {
-  return s.trim().replace(/(, *| +)/g, ',').replace(/['"]/g, '').split(',');
-}
 
 @Component({
   selector: 'app-root',
@@ -75,10 +72,13 @@ export class AppComponent implements OnInit {
   dataDims: string[];
   chartOptions: any;
   colors: string;
-  cleanColors: any;
+  colorsRight: string;
   steps: number;
   bezier: boolean;
   lightness: boolean;
+  bezierRight: boolean;
+  lightnessRight: boolean;
+  diverging: boolean;
 
   _dataText: string;
   get dataText() {
@@ -137,7 +137,12 @@ export class AppComponent implements OnInit {
     this.chartType = null;
     this.theme = 'light';
     this.colors = '#a8385d,#7aa3e5,#a27ea8,#aae3f5,#adcded,#a95963,#8796c0,#7ed3ed,#50abcc,#ad6886';
+    this.colorsRight = 'darkred, deeppink, orange, lightyellow';
     this.steps = 10;
+    this.bezier = false;
+    this.lightness = false;
+    this.bezierRight = false;
+    this.lightnessRight = false;
     this.bezier = false;
     this.lightness = false;
     this.chartOptions = {...defaultOptions};
@@ -209,11 +214,36 @@ export class AppComponent implements OnInit {
     }
   }
 
-  updateColorScheme(colors = this.colors, steps = this.steps) {
-    this.cleanColors = clean(colors);
-    const scale = this.bezier ? chroma.bezier(this.cleanColors.slice(0, 5)).scale() : chroma.scale(this.cleanColors);
-    const cs = scale.mode('lab').correctLightness(this.lightness);
-    this.chartOptions.colorScheme = {...this.chartOptions.colorScheme, domain: cs.colors(steps)};
+  updateColorScheme() {
+    const domain = this.diverging ? this.updateColorSchemeDiv() : this.updateColorSchemeSeq();
+    this.chartOptions.colorScheme = {...this.chartOptions.colorScheme, domain};
   }
+
+  updateColorSchemeSeq() {
+    const cs = getColorScale(this.colors, this.bezier, this.lightness);
+    return cs.colors(this.steps);
+  }
+
+  updateColorSchemeDiv() {
+    const domainL = getColorScale(this.colors, this.bezier, this.lightness).colors(this.steps);
+    const domainR = getColorScale(this.colorsRight, this.bezierRight, this.lightnessRight).colors(this.steps);
+
+    if (domainL[domainL.length - 1] === domainR[0]) {
+      domainL.pop();
+    }
+
+    const cs = chroma.scale([...domainL, ...domainR]);
+    return cs.colors(this.steps);
+  }
+}
+
+function clean(s: string): string[] {
+  return s.trim().replace(/(, *| +)/g, ',').replace(/['"]/g, '').split(',');
+}
+
+function getColorScale(colors: string, bezier: boolean, lightness: boolean) {
+  const cleanColors = clean(colors);
+  const scale = bezier ? chroma.bezier(cleanColors.slice(0, 5)).scale() : chroma.scale(cleanColors);
+  return scale.mode('lab').correctLightness(lightness);
 }
 

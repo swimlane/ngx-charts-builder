@@ -319,66 +319,90 @@
   <ngx-section class="shadow dark" sectionTitle="Customize your Visualization"
     [sectionCollapsible]="hasValidDimensions"
     [sectionCollapsed]="!hasValidDimensions">
-
-    <ngx-select
-      [filterable]="false"
-      label="Theme"
-      [allowClear]="false"
-      [ngModel]="[theme]"
-      (change)="theme = $event[0]">
-      <ngx-select-option *ngFor="let theme of ['light', 'dark']"
-        [name]="theme"
-        [value]="theme">
-      </ngx-select-option>
-    </ngx-select>
-
-    <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend" label="Show Legend">
-    </ngx-toggle>
-    <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle" label="Legend Title"></ngx-input>
-    <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel" label="X Axis Label"></ngx-input>
-    <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel" label="Y Axis Label"></ngx-input>
+    <div *ngIf="hasValidDimensions">
+      <ngx-select
+        [filterable]="false"
+        label="Theme"
+        [allowClear]="false"
+        [ngModel]="[theme]"
+        (change)="theme = $event[0]">
+        <ngx-select-option *ngFor="let theme of ['light', 'dark']"
+          [name]="theme"
+          [value]="theme">
+        </ngx-select-option>
+      </ngx-select>
+  
+      <ngx-toggle type="checkbox" [(ngModel)]="chartOptions.showLegend" label="Show Legend">
+      </ngx-toggle>
+      <ngx-input type="text" [(ngModel)]="chartOptions.legendTitle" label="Legend Title"></ngx-input>
+      <ngx-input type="text" [(ngModel)]="chartOptions.xAxisLabel" label="X Axis Label"></ngx-input>
+      <ngx-input type="text" [(ngModel)]="chartOptions.yAxisLabel" label="Y Axis Label"></ngx-input>
+    </div>
   </ngx-section>
 
   <ngx-section class="shadow dark" sectionTitle="Customize Color Scale"
     [sectionCollapsible]="hasValidDimensions"
     [sectionCollapsed]="!hasValidDimensions">
 
-    <div fxLayout="row wrap" fxLayoutGap="20px">
-      <div fxFlex>
-        <ngx-input
-          class="colors"
-          type="text"
-          [(ngModel)]="colors"
-          (change)="updateColorScheme()"
-          label="Color Scale"
-          hint="Enter named colors or hex codes"></ngx-input>
-        <ngx-input 
-          class="colors"
-          type="number"
-          min="2"
-          max="12"
-          label="Step count"
-          [(ngModel)]="steps"
-          (change)="updateColorScheme()"></ngx-input>
+    <ng-container *ngIf="hasValidDimensions">
+      <ngx-toggle
+        [(ngModel)]="diverging"
+        label="Diverging"
+        (change)="updateColorScheme()">
+      </ngx-toggle>
+      <ngx-input
+        type="number"
+        min="2"
+        label="Step count"
+        [(ngModel)]="steps"
+        (change)="updateColorScheme()"></ngx-input>
+
+      <div fxLayout="row nowrap" fxLayoutGap="20px">
+        <div  fxFlex="1 1 100%">
+          <ngx-input
+            class="colors"
+            type="text"
+            [(ngModel)]="colors"
+            (change)="updateColorScheme()"
+            label="Color Scale"
+            hint="Enter named colors or hex codes"></ngx-input>
           <ngx-checkbox
             [(ngModel)]="bezier"
             (change)="updateColorScheme()">
-            Bezier interpol
+            Bezier interpollation
           </ngx-checkbox>
           <ngx-checkbox
             [(ngModel)]="lightness"
             (change)="updateColorScheme()">
             Lightness correction
           </ngx-checkbox>
-      </div>
-      <div fxFlex="0 0 200px">
+        </div>
+        <div fxFlex="1 1 100%" *ngIf="diverging">
+          <ngx-input
+            class="colors"
+            type="text"
+            [(ngModel)]="colorsRight"
+            (change)="updateColorScheme()"
+            label="Color Scale Right"
+            hint="Enter named colors or hex codes"></ngx-input>
+          <ngx-checkbox
+            [(ngModel)]="bezierRight"
+            (change)="updateColorScheme()">
+            Bezier interpollation
+          </ngx-checkbox>
+          <ngx-checkbox
+            [(ngModel)]="lightnessRight"
+            (change)="updateColorScheme()">
+            Lightness correction
+          </ngx-checkbox>
+        </div>
+        <div fxFlex="0 0 200px">
           <ul class="color-scale pull-right">
             <li *ngFor="let hex of chartOptions.colorScheme.domain" [ngStyle]="{'background-color': hex}">{{hex}}</li>
           </ul>
+        </div>
       </div>
-    </div>
-
-
+    </ng-container>
 
   </ngx-section>
 </div>
