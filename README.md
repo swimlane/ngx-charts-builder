@@ -1,5 +1,7 @@
 # ngx-charts-builder
+> ⚠️ **This project is not maintained any longer. Please feel free to fork it if you need to make changes to the library.**
 
+\
 📊 ngx-charts-builder is a chart builder for ngx-charts!
 
 ## Development server
